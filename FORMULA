@@ -1,0 +1,8 @@
+name: avinetworks
+os: Debian, RedHat
+os_family: Debian, RedHat
+version: 2017216
+release: 1
+summary: Formula for installing and configuring Avinetworks Avivantage
+description: Formula for installing and configuring Avinetworks Avivantage
+top_level_dir: avinetworks

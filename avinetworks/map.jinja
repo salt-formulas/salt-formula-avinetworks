@@ -1,0 +1,8 @@
+{% set server = salt['grains.filter_by']({
+    'Debian': {
+
+    },
+    'RedHat': {
+
+    },
+}, merge=pillar.avinetworks.get('server', {})) %}

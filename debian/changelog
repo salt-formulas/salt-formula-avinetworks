@@ -1,0 +1,5 @@
+salt-formula-avinetworks (2017.2) xenial; urgency=medium
+
+  * Initial release
+
+ -- Richard Felkl <rfelkl@mirantis.com>  Thu, 16 Feb 2017 16:50:41 +0200
