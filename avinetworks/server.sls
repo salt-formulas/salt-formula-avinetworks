@@ -108,11 +108,11 @@ avinetworks_secgroup:
   - require:
     - keystone: avinetworks_tenant
 
-avinetworks_instance:
+avinetworks_instance_01:
   novang.instance_present:
   - profile: {{ server.identity }}
   - tenant_name: avinetworks
-  - name: avinetworks
+  - name: avi_ctl01
   - flavor: avinetworks
   - image: avinetworks
   - security_groups:
@@ -128,17 +128,83 @@ avinetworks_instance:
     - neutronng: avinetworks_subnet
     - neutronng: avinetworks_secgroup
 
-avinetworks_floating_ip:
+avinetworks_instance_02:
+  novang.instance_present:
+  - profile: {{ server.identity }}
+  - tenant_name: avinetworks
+  - name: avi_ctl02
+  - flavor: avinetworks
+  - image: avinetworks
+  - security_groups:
+    - avinetworks
+  - networks:
+    - name: avinetworks
+      v4_fixed_ip: 10.1.0.11
+  - require:
+    - keystone: avinetworks_tenant
+    - novang: avinetworks_flavor
+    - glanceng: avinetworks_image
+    - neutronng: avinetworks_network
+    - neutronng: avinetworks_subnet
+    - neutronng: avinetworks_secgroup
+
+avinetworks_instance_03:
+  novang.instance_present:
+  - profile: {{ server.identity }}
+  - tenant_name: avinetworks
+  - name: avi_ctl03
+  - flavor: avinetworks
+  - image: avinetworks
+  - security_groups:
+    - avinetworks
+  - networks:
+    - name: avinetworks
+      v4_fixed_ip: 10.1.0.12
+  - require:
+    - keystone: avinetworks_tenant
+    - novang: avinetworks_flavor
+    - glanceng: avinetworks_image
+    - neutronng: avinetworks_network
+    - neutronng: avinetworks_subnet
+    - neutronng: avinetworks_secgroup
+
+avinetworks_floating_ip_01:
   neutronng.floatingip_present:
   - profile: {{ server.identity }}
   - subnet: avinetworks
   - tenant_name: avinetworks
-  - name: avinetworks
+  - name: avi_ctl01
   - network: avinetworks
   - require:
     - keystone: avinetworks_tenant
     - neutronng: avinetworks_network
     - neutronng: avinetworks_subnet
-    - novang: avinetworks_instance
+    - novang: avinetworks_instance_01
+
+avinetworks_floating_ip_02:
+  neutronng.floatingip_present:
+  - profile: {{ server.identity }}
+  - subnet: avinetworks
+  - tenant_name: avinetworks
+  - name: avi_ctl02
+  - network: avinetworks
+  - require:
+    - keystone: avinetworks_tenant
+    - neutronng: avinetworks_network
+    - neutronng: avinetworks_subnet
+    - novang: avinetworks_instance_02
+
+avinetworks_floating_ip_03:
+  neutronng.floatingip_present:
+  - profile: {{ server.identity }}
+  - subnet: avinetworks
+  - tenant_name: avinetworks
+  - name: avi_ctl03
+  - network: avinetworks
+  - require:
+    - keystone: avinetworks_tenant
+    - neutronng: avinetworks_network
+    - neutronng: avinetworks_subnet
+    - novang: avinetworks_instance_03
 
 {%- endif %}
