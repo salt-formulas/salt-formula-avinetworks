@@ -7,16 +7,28 @@ avinetworks_tenant:
     - name: avinetworks
     - description: Avi Networks Vantage service project
 
+avinetworks_user:
+  keystone.user_present:
+  - profile: {{ server.identity }}
+  - name: admin
+  - password: wouldnotreset
+  - tenant: avinetworks
+  - project: avinetworks
+  - email: admin@admin.local
+  - password_reset: False
+  - require:
+    - keystone: avinetworks_tenant
+
 avinetworks_flavor:
   novang.flavor_present:
   - name: avinetworks
   - profile: {{ server.identity }}
   - flavor_id: avinetworks
-  - ram: 8
+  - ram: 8192
   - disk: 160
   - vcpus: 4
   - require:
-    - keystone: avinetworks_tenant
+    - keystone: avinetworks_user
 
 avinetworks_image:
   glanceng.image_present:
@@ -25,8 +37,9 @@ avinetworks_image:
   - visibility: public
   - protected: False
   - location: {{ server.image_location }}
+  - disk_format: {{ server.disk_format }}
   - require:
-    - keystone: avinetworks_tenant
+    - keystone: avinetworks_user
 
 avinetworks_network:
   neutronng.network_present:
@@ -34,7 +47,7 @@ avinetworks_network:
   - name: avinetworks
   - tenant: avinetworks
   - require:
-    - keystone: avinetworks_tenant
+    - keystone: avinetworks_user
 
 avinetworks_subnet:
   neutronng.subnet_present:
@@ -44,7 +57,7 @@ avinetworks_subnet:
   - network: avinetworks
   - cidr: 10.1.0.0/24
   - require:
-    - keystone: avinetworks_tenant
+    - keystone: avinetworks_user
     - neutronng: avinetworks_network
 
 avinetworks_router:
@@ -56,7 +69,7 @@ avinetworks_router:
     - avinetworks
   - gateway_network: {{ server.public_network }}
   - require:
-    - keystone: avinetworks_tenant
+    - keystone: avinetworks_user
     - neutronng: avinetworks_network
     - neutronng: avinetworks_subnet
 
@@ -64,18 +77,19 @@ avinetworks_secgroup:
   neutronng.security_group_present:
   - profile: {{ server.identity }}
   - name: avinetworks
+  - description: AVI Networks security group
   - tenant: avinetworks
   - rules:
     - direction: egress
       ethertype: IPv6
       protocol: tcp
       remote_ip_prefix: ::/0
-      port_range_min: 0
+      port_range_min: 1
       port_range_max: 65535
     - direction: egress
       ethertype: IPv4
       remote_ip_prefix: 0.0.0.0/0
-      port_range_min: 0
+      port_range_min: 1
       port_range_max: 65535
     - direction: ingress
       ethertype: IPv4
@@ -106,7 +120,7 @@ avinetworks_secgroup:
       port_range_max: 443
       remote_ip_prefix: 0.0.0.0/0
   - require:
-    - keystone: avinetworks_tenant
+    - keystone: avinetworks_user
 
 avinetworks_instance_01:
   novang.instance_present:
@@ -121,7 +135,7 @@ avinetworks_instance_01:
     - name: avinetworks
       v4_fixed_ip: 10.1.0.10
   - require:
-    - keystone: avinetworks_tenant
+    - keystone: avinetworks_user
     - novang: avinetworks_flavor
     - glanceng: avinetworks_image
     - neutronng: avinetworks_network
@@ -141,7 +155,7 @@ avinetworks_instance_02:
     - name: avinetworks
       v4_fixed_ip: 10.1.0.11
   - require:
-    - keystone: avinetworks_tenant
+    - keystone: avinetworks_user
     - novang: avinetworks_flavor
     - glanceng: avinetworks_image
     - neutronng: avinetworks_network
@@ -161,7 +175,7 @@ avinetworks_instance_03:
     - name: avinetworks
       v4_fixed_ip: 10.1.0.12
   - require:
-    - keystone: avinetworks_tenant
+    - keystone: avinetworks_user
     - novang: avinetworks_flavor
     - glanceng: avinetworks_image
     - neutronng: avinetworks_network
@@ -176,7 +190,7 @@ avinetworks_floating_ip_01:
   - name: avi_ctl01
   - network: avinetworks
   - require:
-    - keystone: avinetworks_tenant
+    - keystone: avinetworks_user
     - neutronng: avinetworks_network
     - neutronng: avinetworks_subnet
     - novang: avinetworks_instance_01
@@ -189,7 +203,7 @@ avinetworks_floating_ip_02:
   - name: avi_ctl02
   - network: avinetworks
   - require:
-    - keystone: avinetworks_tenant
+    - keystone: avinetworks_user
     - neutronng: avinetworks_network
     - neutronng: avinetworks_subnet
     - novang: avinetworks_instance_02
@@ -202,7 +216,7 @@ avinetworks_floating_ip_03:
   - name: avi_ctl03
   - network: avinetworks
   - require:
-    - keystone: avinetworks_tenant
+    - keystone: avinetworks_user
     - neutronng: avinetworks_network
     - neutronng: avinetworks_subnet
     - novang: avinetworks_instance_03

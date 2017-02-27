@@ -15,6 +15,7 @@ Salt formula to setup Avi Networks LBaaS
         enabled: true
         identity: cloud1
         image_location: http://...
+        disk_format: qcow2
         public_network: INET1
 
     avinetworks:
