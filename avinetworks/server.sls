@@ -188,7 +188,7 @@ avinetworks_floating_ip_01:
   - subnet: avinetworks
   - tenant_name: avinetworks
   - name: avi_ctl01
-  - network: avinetworks
+  - network: {{ server.public_network }}
   - require:
     - keystone: avinetworks_user
     - neutronng: avinetworks_network
@@ -201,7 +201,7 @@ avinetworks_floating_ip_02:
   - subnet: avinetworks
   - tenant_name: avinetworks
   - name: avi_ctl02
-  - network: avinetworks
+  - network: {{ server.public_network }}
   - require:
     - keystone: avinetworks_user
     - neutronng: avinetworks_network
@@ -214,7 +214,7 @@ avinetworks_floating_ip_03:
   - subnet: avinetworks
   - tenant_name: avinetworks
   - name: avi_ctl03
-  - network: avinetworks
+  - network: {{ server.public_network }}
   - require:
     - keystone: avinetworks_user
     - neutronng: avinetworks_network
