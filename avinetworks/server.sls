@@ -122,6 +122,14 @@ avinetworks_secgroup:
   - require:
     - keystone: avinetworks_user
 
+avinetworks_init_script:
+  file.managed:
+  - name: /etc/avi_init.sh
+  - source: salt://avinetworks/files/avi_init
+  - defaults:
+      saltmaster: {{ server.saltmaster_ip }}
+  - template: jinja
+
 avinetworks_instance_01:
   novang.instance_present:
   - profile: {{ server.identity }}
@@ -134,6 +142,7 @@ avinetworks_instance_01:
   - networks:
     - name: avinetworks
       v4_fixed_ip: 10.1.0.10
+  - user_data: /etc/avi_init.sh
   - require:
     - keystone: avinetworks_user
     - novang: avinetworks_flavor
@@ -141,6 +150,7 @@ avinetworks_instance_01:
     - neutronng: avinetworks_network
     - neutronng: avinetworks_subnet
     - neutronng: avinetworks_secgroup
+    - file: avinetworks_init_script
 
 avinetworks_instance_02:
   novang.instance_present:
@@ -154,6 +164,7 @@ avinetworks_instance_02:
   - networks:
     - name: avinetworks
       v4_fixed_ip: 10.1.0.11
+  - user_data: /etc/avi_init.sh
   - require:
     - keystone: avinetworks_user
     - novang: avinetworks_flavor
@@ -161,6 +172,7 @@ avinetworks_instance_02:
     - neutronng: avinetworks_network
     - neutronng: avinetworks_subnet
     - neutronng: avinetworks_secgroup
+    - file: avinetworks_init_script
 
 avinetworks_instance_03:
   novang.instance_present:
@@ -174,6 +186,7 @@ avinetworks_instance_03:
   - networks:
     - name: avinetworks
       v4_fixed_ip: 10.1.0.12
+  - user_data: /etc/avi_init.sh
   - require:
     - keystone: avinetworks_user
     - novang: avinetworks_flavor
@@ -181,6 +194,7 @@ avinetworks_instance_03:
     - neutronng: avinetworks_network
     - neutronng: avinetworks_subnet
     - neutronng: avinetworks_secgroup
+    - file: avinetworks_init_script
 
 avinetworks_floating_ip_01:
   neutronng.floatingip_present:

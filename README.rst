@@ -17,6 +17,7 @@ Salt formula to setup Avi Networks LBaaS
         image_location: http://...
         disk_format: qcow2
         public_network: INET1
+        saltmaster_ip: 10.0.0.90
 
     avinetworks:
       client:
