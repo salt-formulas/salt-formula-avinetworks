@@ -7,6 +7,16 @@ avinetworks_tenant:
     - name: avinetworks
     - description: Avi Networks Vantage service project
 
+avinetworks_quotas:
+  novang.quota_present:
+    - profile: {{ server.identity }}
+    - tenant_name: avinetworks
+    - cores: 24
+    - ram: 73728
+    - floating_ips: 3
+    - require:
+      - keystone: avinetworks_tenant
+
 avinetworks_user:
   keystone.user_present:
   - profile: {{ server.identity }}
