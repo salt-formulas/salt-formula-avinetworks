@@ -6,3 +6,13 @@
 
     },
 }, merge=pillar.avinetworks.get('server', {})) %}
+
+
+{% set client = salt['grains.filter_by']({
+    'Debian': {
+
+    },
+    'RedHat': {
+
+    },
+}, merge=pillar.avinetworks.get('client', {})) %}
