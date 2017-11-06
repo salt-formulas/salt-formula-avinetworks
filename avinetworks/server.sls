@@ -64,7 +64,7 @@ avinetworks_subnet:
   - profile: {{ server.identity }}
   - name: avinetworks
   - tenant: avinetworks
-  - network: avinetworks
+  - network_name: avinetworks
   - cidr: 10.1.0.0/24
   - require:
     - keystone: avinetworks_user
@@ -129,6 +129,12 @@ avinetworks_secgroup:
       port_range_min: 443
       port_range_max: 443
       remote_ip_prefix: 0.0.0.0/0
+    - direction: ingress
+      ethertype: IPv4
+      protocol: tcp
+      port_range_min: 8443
+      port_range_max: 8443
+      remote_ip_prefix: 0.0.0.0/0
   - require:
     - keystone: avinetworks_user
 
@@ -152,7 +158,7 @@ avinetworks_instance_01:
   - networks:
     - name: avinetworks
       v4_fixed_ip: 10.1.0.10
-  - user_data: /etc/avi_init.sh
+  #- user_data: /etc/avi_init.sh
   - require:
     - keystone: avinetworks_user
     - novang: avinetworks_flavor
@@ -174,7 +180,7 @@ avinetworks_instance_02:
   - networks:
     - name: avinetworks
       v4_fixed_ip: 10.1.0.11
-  - user_data: /etc/avi_init.sh
+  #- user_data: /etc/avi_init.sh
   - require:
     - keystone: avinetworks_user
     - novang: avinetworks_flavor
@@ -196,7 +202,7 @@ avinetworks_instance_03:
   - networks:
     - name: avinetworks
       v4_fixed_ip: 10.1.0.12
-  - user_data: /etc/avi_init.sh
+  #- user_data: /etc/avi_init.sh
   - require:
     - keystone: avinetworks_user
     - novang: avinetworks_flavor
@@ -218,31 +224,5 @@ avinetworks_floating_ip_01:
     - neutronng: avinetworks_network
     - neutronng: avinetworks_subnet
     - novang: avinetworks_instance_01
-
-avinetworks_floating_ip_02:
-  neutronng.floatingip_present:
-  - profile: {{ server.identity }}
-  - subnet: avinetworks
-  - tenant_name: avinetworks
-  - name: avi_ctl02
-  - network: {{ server.public_network }}
-  - require:
-    - keystone: avinetworks_user
-    - neutronng: avinetworks_network
-    - neutronng: avinetworks_subnet
-    - novang: avinetworks_instance_02
-
-avinetworks_floating_ip_03:
-  neutronng.floatingip_present:
-  - profile: {{ server.identity }}
-  - subnet: avinetworks
-  - tenant_name: avinetworks
-  - name: avi_ctl03
-  - network: {{ server.public_network }}
-  - require:
-    - keystone: avinetworks_user
-    - neutronng: avinetworks_network
-    - neutronng: avinetworks_subnet
-    - novang: avinetworks_instance_03
 
 {%- endif %}
