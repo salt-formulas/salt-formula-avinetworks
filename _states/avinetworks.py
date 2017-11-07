@@ -100,6 +100,17 @@ Enforce the cluster present
           - name: avi03
             addr: 172.17.32.232
 
+Enforce the useraccount update
+------------------------------
+
+.. code-block:: yaml
+
+    update admin password:
+      avinetworks.useraccount_update:
+        - old_password: password1*
+        - new_password: password12*
+        - full_name: Administrator  (optional)
+        - email: admin@domain.com   (optional)
 '''
 
 
@@ -210,6 +221,21 @@ def cluster_present(name, nodes, virtual_ip=None, **kwargs):
     :param servers:       The pool directs load balanced traffic to this list of destination servers. The servers can be configured by IP address, name, network or via IP Address
     '''
     ret = __salt__['avinetworks.cluster_update'](name, nodes, virtual_ip, **kwargs)
+    if len(ret['changes']) == 0:
+        pass
+    return ret
+
+
+def useraccount_update(old_password, new_password, full_name=None, email=None, **kwargs):
+    '''
+    Update used user account.
+
+    :param old_password:   Password used for this api connection
+    :param new_password:   Traffic sent to servers will use this destination server port unless overridden by the server's specific port attribute.
+    :param full_name:      The load balancing algorithm will pick a server within the pool's list of available servers
+    :param email:          The pool directs load balanced traffic to this list of destination servers. The servers can be configured by IP address, name, network or via IP Address
+    '''
+    ret = __salt__['avinetworks.useraccount_update'](old_password=old_password, password=new_password, full_name=full_name, email=email, **kwargs)
     if len(ret['changes']) == 0:
         pass
     return ret
