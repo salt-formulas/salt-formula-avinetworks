@@ -383,3 +383,114 @@ def cluster_update(name, nodes, virtual_ip=None, **kwargs):
         ret['result'] = False
         ret['comment'] = {"Error": "Cluster was not updates", "reason": result.json()['error']}
     return ret
+
+
+def user_list():
+    command = "user"
+    ret = send_request_get(command)
+    return ret.json()
+
+
+def user_get(name, **kwargs):
+    users = user_list()
+    for user in users['results']:
+        if name == user['username'] or name == user['uuid']:
+            return user
+    return {'result': False,
+            'Error': "Error in the retrieving user " + name + "."}
+
+
+def _compare_attr(origin, new):
+    if not new:
+        return origin
+    return new
+
+
+def user_create(name, uuid=None, username=None, password=None, email=None, full_name=None, is_superuser=None, local=None, **kwargs):
+    command = 'user'
+    ret = {'name': name,
+           'changes': {},
+           'result': True,
+           'comment': ''}
+
+    user = user_get(name)
+    if 'Error' not in user:
+        data = {}
+        data['username'] = _compare_attr(user['username'], username)
+        data['password'] = _compare_attr(user['password'], password)
+        data['email'] = _compare_attr(user['email'], email)
+        data['full_name'] = _compare_attr(user['full_name'], full_name)
+        data['is_superuser'] = _compare_attr(user['is_superuser'], is_superuser)
+        data['local'] = _compare_attr(user['local'], local)
+        # data['default_tenant_uuid'] = _compare_attr(user['default_tenant_uuid'], default_tenant_uuid)
+
+        if __opts__['test']:
+            ret['changes'] = None
+            ret['comment'] = "User " + name + " will be updated"
+            return ret
+
+        command += "/"+user["uuid"]
+        result = send_request_put(command, data)
+        ret['result'] = result
+        ret['comment'] = "User " + name + " has been updated"
+        return ret
+
+    data = {}
+    data['username'] = username
+    data['password'] = password
+    data['email'] = email
+    data['full_name'] = full_name
+    data['is_superuser'] = is_superuser
+    data['local'] = local
+
+    if __opts__['test']:
+        ret['changes'] = None
+        ret['comment'] = "User " + name + " will be created"
+        return ret
+
+    result = send_request_post(command, data)
+    ret['result'] = result
+    ret['comment'] = "User " + name + " has been created"
+    return ret
+
+
+def useraccount_get():
+    command = "useraccount"
+    ret = send_request_get(command)
+    return ret.json()
+
+
+def useraccount_update(old_password, password, full_name=None, email=None, **kwargs):
+    command = 'useraccount'
+    ret = {'name': "user_account",
+           'changes': {},
+           'result': True,
+           'comment': ''}
+    data = {}
+    data['old_password'] = old_password
+    data['password'] = password
+    account = useraccount_get()
+    if email:
+        data['email'] = email
+    elif (len(account["email"]) > 0):
+        data['email'] = str(account["email"])
+    else:
+        data['email'] = ""
+
+    if full_name:
+        data['full_name'] = full_name
+    elif (len(account["full_name"]) > 0):
+        data['full_name'] = str(account["full_name"])
+    else:
+        data['full_name'] = ""
+
+    if __opts__['test']:
+        ret['result'] = None
+        ret['comment'] = "User Account will be updated"
+        return ret
+
+    send_request_put(command, data)
+    ret['result'] = True
+    ret['changes'] = data
+    ret['comment'] = "User Account has been updated"
+    return ret
