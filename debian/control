@@ -10,6 +10,6 @@ Vcs-Git: https://github.com/salt-formulas/salt-formula-avinetworks.git
 
 Package: salt-formula-avinetworks
 Architecture: all
-Depends: ${misc:Depends}, salt-master, reclass
+Depends: ${misc:Depends}
 Description: Avinetworks salt formula
  Configure Linux operating system.
